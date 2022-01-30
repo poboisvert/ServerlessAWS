@@ -1,16 +1,13 @@
-import requests
+from fastapi import FastAPI
+from mangum import Mangum
+
+app = FastAPI()
 
 
-QUOTE_URL = "https://api.quotable.io/random"
+@app.get("/")
+def get_root():
+    print("test")
+    return {"message": "FastAPI running in a Lambda function"}
 
 
-def handler(event, context):
-    quote = get_quote()
-    return {
-        "message": f"\"{quote['content']} - {quote['author']}\"",
-    }
-
-
-def get_quote():
-    res = requests.get(QUOTE_URL)
-    return res.json()
+handler = Mangum(app)

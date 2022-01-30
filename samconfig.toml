@@ -6,6 +6,7 @@ stack_name = "SamTemplateDev"
 region = "us-east-1"
 capabilities = "CAPABILITY_NAMED_IAM"
 parameter_overrides = "Environment=Dev"
+confirm_changeset = true
 
 [stage.deploy.parameters]
 s3_prefix = "SamTemplateStage"

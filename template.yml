@@ -21,39 +21,52 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
-        Version: "2012-10-17"
+        Version: '2012-10-17'
         Statement:
-          - Effect: "Allow"
+          - Effect: 'Allow'
             Principal:
               Service:
                 - lambda.amazonaws.com
             Action:
-              - "sts:AssumeRole"
+              - 'sts:AssumeRole'
       Policies:
-        - PolicyName: "Logging"
+        - PolicyName: 'Logging'
           PolicyDocument:
-            Version: "2012-10-17"
+            Version: '2012-10-17'
             Statement:
               - Effect: Allow
                 Action:
                   - logs:CreateLogGroup
                   - logs:CreateLogStream
                   - logs:PutLogEvents
-                Resource: "*"
+                Resource: '*'
 
   Function:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub "AWSSamTemplate${Environment}"
+      FunctionName: !Sub 'AWSSamTemplate${Environment}'
       MemorySize: 128
       CodeUri: src
       Handler: app.handler
       Runtime: python3.9
       Role: !GetAtt FunctionRole.Arn
+      Events:
+        Api:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref Api
 
   FunctionLogGroup:
     DependsOn: Function
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub "/aws/lambda/AWSSamTemplate${Environment}"
+      LogGroupName: !Sub '/aws/lambda/AWSSamTemplate${Environment}'
       RetentionInDays: 30
+  Api:
+    Type: AWS::Serverless::HttpApi
+
+Outputs:
+  ApiUrl:
+    Description: URL of your API endpoint
+    Value:
+      Fn::Sub: 'https://${Api}.execute-api.${AWS::Region}.${AWS::URLSuffix}/'
